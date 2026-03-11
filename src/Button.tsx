@@ -2,8 +2,9 @@ import { JSX } from 'react';
 
 type ButtonProps = {
     title: string;
+    onClick: () => void;
 };
 
-export function Button({ title }: ButtonProps): JSX.Element {
-    return <button>{title}</button>;
+export function Button({ title, onClick }: ButtonProps): JSX.Element {
+    return <button onClick={onClick}>{title}</button>;
 }

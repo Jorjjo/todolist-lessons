@@ -1,14 +1,28 @@
 import { JSX } from 'react';
-import { TaskProps } from './App';
 import { Button } from './Button';
+import { FilterType } from './App';
+
+export type Task = {
+    id: number;
+    title: string;
+    isDone: boolean;
+};
 
 type ToDoListProps = {
     title: string;
-    tasks: TaskProps[];
+    tasks: Task[];
     date?: string;
+    deleteTask: (taskId: number) => void;
+    changeFilter: (filter: FilterType) => void;
 };
 
-export const TodolistItem = ({ title, tasks, date }: ToDoListProps) => {
+export const TodolistItem = ({
+    title,
+    tasks,
+    date,
+    deleteTask,
+    changeFilter,
+}: ToDoListProps) => {
     const tasksList: JSX.Element =
         tasks.length === 0 ? (
             <p>No Tasks</p>
@@ -19,24 +33,44 @@ export const TodolistItem = ({ title, tasks, date }: ToDoListProps) => {
                         <li key={task.id}>
                             <input type='checkbox' checked={task.isDone} />
                             <span>{task.title}</span>
+                            <Button
+                                title='x'
+                                onClick={() => deleteTask(task.id)}
+                            />
                         </li>
                     );
                 })}
             </ul>
         );
+
     return (
         <div>
             <h3>{title}</h3>
             <div>
                 <input />
-                <Button title='+'/>
+                <Button title='+' onClick={() => {}} />
             </div>
             {tasksList}
             <div>{date}</div>
             <div>
-                <Button title='All' />
-                <Button title='Active' />
-                <Button title='Completed' />
+                <Button
+                    title='All'
+                    onClick={() => {
+                        changeFilter('all');
+                    }}
+                />
+                <Button
+                    title='Active'
+                    onClick={() => {
+                        changeFilter('active');
+                    }}
+                />
+                <Button
+                    title='Completed'
+                    onClick={() => {
+                        changeFilter('completed');
+                    }}
+                />
             </div>
         </div>
     );
