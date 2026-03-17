@@ -1,9 +1,10 @@
-import { JSX } from 'react';
+import { JSX, useState } from 'react';
 import { Button } from './Button';
 import { FilterType } from './App';
+import { Input } from './Input';
 
 export type Task = {
-    id: number;
+    id: string;
     title: string;
     isDone: boolean;
 };
@@ -12,8 +13,9 @@ type ToDoListProps = {
     title: string;
     tasks: Task[];
     date?: string;
-    deleteTask: (taskId: number) => void;
+    deleteTask: (taskId: Task['id']) => void;
     changeFilter: (filter: FilterType) => void;
+    createTask: (taskTitle: Task['title']) => void;
 };
 
 export const TodolistItem = ({
@@ -22,6 +24,7 @@ export const TodolistItem = ({
     date,
     deleteTask,
     changeFilter,
+    createTask,
 }: ToDoListProps) => {
     const tasksList: JSX.Element =
         tasks.length === 0 ? (
@@ -43,12 +46,29 @@ export const TodolistItem = ({
             </ul>
         );
 
+    const [taskTitle, setTaskTitle] = useState('');
+
+    const handleCreateTask = () => {
+        createTask(taskTitle);
+        setTaskTitle('');
+    };
+
     return (
         <div>
             <h3>{title}</h3>
             <div>
-                <input />
-                <Button title='+' onClick={() => {}} />
+                <Input
+                    taskTitle={taskTitle}
+                    onChange={setTaskTitle}
+                    onEnter={handleCreateTask}
+                />
+                <Button
+                    title='+'
+                    isDisabled={taskTitle.trim() === ''}
+                    onClick={() => {
+                        handleCreateTask();
+                    }}
+                />
             </div>
             {tasksList}
             <div>{date}</div>
