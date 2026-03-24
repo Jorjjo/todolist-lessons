@@ -42,15 +42,28 @@ export const App = () => {
         setCurrentFilter(filter);
     };
 
+    const changeStatus = (taskId: string, isDone: boolean) => {
+        let taskToChangeStatus = tasks.find((task) => {
+            return task.id === taskId;
+        });
+        if (taskToChangeStatus) {
+            taskToChangeStatus.isDone = isDone;
+        }
+
+        setTasks([...tasks]);
+    };
+
     return (
         <div className='app'>
             <TodolistItem
                 title='What to learn?'
                 tasks={tasksForTodolist}
+                filter={currentFilter}
                 date='27.07.2027'
                 deleteTask={deleteTask}
                 changeFilter={changeFilter}
                 createTask={createTask}
+                changeTaskStatus={changeStatus}
             />
         </div>
     );
