@@ -10,21 +10,19 @@ export type Task = {
 };
 
 type ToDoListProps = {
-    title: string;
+    todoList: { id: string; title: string; filter: string };
     tasks: Task[];
     date?: string;
-    filter: FilterType;
     deleteTask: (taskId: Task['id']) => void;
-    changeFilter: (filter: FilterType) => void;
+    changeFilter: (todoListId: string, filter: FilterType) => void;
     createTask: (taskTitle: Task['title']) => void;
     changeTaskStatus: (taskId: Task['id'], isDone: boolean) => void;
 };
 
 export const TodolistItem = ({
-    title,
+    todoList,
     tasks,
     date,
-    filter,
     deleteTask,
     changeFilter,
     createTask,
@@ -82,15 +80,15 @@ export const TodolistItem = ({
                 setTaskTitle('');
                 break;
         }
-        // if (taskTitle.trim() !== '' && isTitleLengthValid) {
-        //     createTask(taskTitle.trim());
-        //     setTaskTitle('');
-        // }
+    };
+
+    const handleChangeFilter = (filter: FilterType) => {
+        changeFilter(todoList.id, filter);
     };
 
     return (
         <div>
-            <h3>{title}</h3>
+            <h3>{todoList.title}</h3>
             <div>
                 <Input
                     className={error ? 'error' : ''}
@@ -112,26 +110,32 @@ export const TodolistItem = ({
             <div>{date}</div>
             <div>
                 <Button
-                    className={filter === 'all' ? 'btn-filter-active' : ''}
+                    className={
+                        todoList.filter === 'all' ? 'btn-filter-active' : ''
+                    }
                     title='All'
                     onClick={() => {
-                        changeFilter('all');
-                    }}
-                />
-                <Button
-                    className={filter === 'active' ? 'btn-filter-active' : ''}
-                    title='Active'
-                    onClick={() => {
-                        changeFilter('active');
+                        handleChangeFilter('all');
                     }}
                 />
                 <Button
                     className={
-                        filter === 'completed' ? 'btn-filter-active' : ''
+                        todoList.filter === 'active' ? 'btn-filter-active' : ''
+                    }
+                    title='Active'
+                    onClick={() => {
+                        handleChangeFilter('active');
+                    }}
+                />
+                <Button
+                    className={
+                        todoList.filter === 'completed'
+                            ? 'btn-filter-active'
+                            : ''
                     }
                     title='Completed'
                     onClick={() => {
-                        changeFilter('completed');
+                        handleChangeFilter('completed');
                     }}
                 />
             </div>
