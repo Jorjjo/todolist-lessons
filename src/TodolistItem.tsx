@@ -13,10 +13,14 @@ type ToDoListProps = {
     todoList: { id: string; title: string; filter: string };
     tasks: Task[];
     date?: string;
-    deleteTask: (taskId: Task['id']) => void;
+    deleteTask: (taskId: Task['id'], todoListId: string) => void;
     changeFilter: (todoListId: string, filter: FilterType) => void;
-    createTask: (taskTitle: Task['title']) => void;
-    changeTaskStatus: (taskId: Task['id'], isDone: boolean) => void;
+    createTask: (taskTitle: Task['title'], todoListId: string) => void;
+    changeTaskStatus: (
+        taskId: Task['id'],
+        isDone: boolean,
+        todoListId: string,
+    ) => void;
 };
 
 export const TodolistItem = ({
@@ -35,12 +39,16 @@ export const TodolistItem = ({
             <ul>
                 {tasks.map((task) => {
                     const handleOnClick = () => {
-                        deleteTask(task.id);
+                        deleteTask(task.id, todoList.id);
                     };
                     const handleOnChange = (
                         event: ChangeEvent<HTMLInputElement>,
                     ) => {
-                        changeTaskStatus(task.id, event.currentTarget.checked);
+                        changeTaskStatus(
+                            task.id,
+                            event.currentTarget.checked,
+                            todoList.id,
+                        );
                     };
                     return (
                         <li key={task.id}>
@@ -76,7 +84,7 @@ export const TodolistItem = ({
                 setError('Title is too long');
                 break;
             default:
-                createTask(taskTitle.trim());
+                createTask(taskTitle.trim(), todoList.id);
                 setTaskTitle('');
                 break;
         }
