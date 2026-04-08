@@ -79,6 +79,9 @@ export const App = () => {
         delete tasks[todoListId];
         setTasks({ ...tasks });
     };
+    //The delete operator removes a property from an object.
+    //delete object.property
+    //delete object[property]
 
     return (
         <div className='app'>
