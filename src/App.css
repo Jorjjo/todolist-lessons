@@ -31,3 +31,9 @@
     color: #fff;
     border-radius: 3px;
 }
+
+.container {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}

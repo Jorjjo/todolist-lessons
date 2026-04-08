@@ -1,6 +1,6 @@
 import { ChangeEvent, JSX, useState } from 'react';
 import { Button } from './Button';
-import { FilterType } from './App';
+import { FilterType, TodoList } from './App';
 import { Input } from './Input';
 
 export type Task = {
@@ -10,7 +10,7 @@ export type Task = {
 };
 
 type ToDoListProps = {
-    todoList: { id: string; title: string; filter: string };
+    todoList: TodoList;
     tasks: Task[];
     date?: string;
     deleteTask: (taskId: Task['id'], todoListId: string) => void;
@@ -21,6 +21,7 @@ type ToDoListProps = {
         isDone: boolean,
         todoListId: string,
     ) => void;
+    deleteTodoList: (todoListId: string) => void;
 };
 
 export const TodolistItem = ({
@@ -31,6 +32,7 @@ export const TodolistItem = ({
     changeFilter,
     createTask,
     changeTaskStatus,
+    deleteTodoList,
 }: ToDoListProps) => {
     const tasksList: JSX.Element =
         tasks.length === 0 ? (
@@ -93,10 +95,22 @@ export const TodolistItem = ({
     const handleChangeFilter = (filter: FilterType) => {
         changeFilter(todoList.id, filter);
     };
+    const handleDeleteList = (todoListId: string) => {
+        deleteTodoList(todoListId);
+    };
 
     return (
         <div>
-            <h3>{todoList.title}</h3>
+            <div className='container'>
+                <h3>{todoList.title}</h3>
+                <Button
+                    title='X'
+                    onClick={() => {
+                        handleDeleteList(todoList.id);
+                    }}
+                />
+            </div>
+
             <div>
                 <Input
                     className={error ? 'error' : ''}
