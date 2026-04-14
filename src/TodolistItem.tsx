@@ -1,7 +1,8 @@
-import { ChangeEvent, JSX, useState } from 'react';
+import { ChangeEvent, JSX } from 'react';
 import { Button } from './Button';
 import { FilterType, TodoList } from './App';
-import { Input } from './Input';
+import { CreateItemForm } from './CreateItemForm';
+import { EditableSpan } from './EditableSpan';
 
 export type Task = {
     id: string;
@@ -22,6 +23,12 @@ type ToDoListProps = {
         todoListId: string,
     ) => void;
     deleteTodoList: (todoListId: string) => void;
+    changeTaskTitle: (
+        todoListId: string,
+        taskId: string,
+        title: string,
+    ) => void;
+    changeTodoListTitle: (todoListId: string, title: string) => void;
 };
 
 export const TodolistItem = ({
@@ -33,6 +40,8 @@ export const TodolistItem = ({
     createTask,
     changeTaskStatus,
     deleteTodoList,
+    changeTaskTitle,
+    changeTodoListTitle,
 }: ToDoListProps) => {
     const tasksList: JSX.Element =
         tasks.length === 0 ? (
@@ -52,6 +61,9 @@ export const TodolistItem = ({
                             todoList.id,
                         );
                     };
+                    const handleChangeTaskTitle = (title: string) => {
+                        changeTaskTitle(todoList.id, task.id, title);
+                    };
                     return (
                         <li key={task.id}>
                             <input
@@ -59,38 +71,18 @@ export const TodolistItem = ({
                                 onChange={handleOnChange}
                                 checked={task.isDone}
                             />
-                            <span
-                                className={task.isDone ? 'task-done' : 'task'}
-                            >
-                                {task.title}
-                            </span>
+                            <EditableSpan
+                                status={task.isDone}
+                                value={task.title}
+                                onTitleChange={handleChangeTaskTitle}
+                                maxTitleLength={15}
+                            />
                             <Button title='x' onClick={handleOnClick} />
                         </li>
                     );
                 })}
             </ul>
         );
-
-    const [taskTitle, setTaskTitle] = useState('');
-    const [error, setError] = useState<string | null>(null);
-
-    const maxTitleLength = 15;
-    const isTitleLengthValid = taskTitle.length <= maxTitleLength;
-
-    const handleCreateTask = () => {
-        switch (true) {
-            case taskTitle.trim() === '':
-                setError('Title is required');
-                break;
-            case !isTitleLengthValid:
-                setError('Title is too long');
-                break;
-            default:
-                createTask(taskTitle.trim(), todoList.id);
-                setTaskTitle('');
-                break;
-        }
-    };
 
     const handleChangeFilter = (filter: FilterType) => {
         changeFilter(todoList.id, filter);
@@ -99,10 +91,22 @@ export const TodolistItem = ({
         deleteTodoList(todoListId);
     };
 
+    const handleCreateTask = (title: string) => {
+        createTask(title, todoList.id);
+    };
+    
+    const handleTodoListTitleChange = (title: string) => {
+        changeTodoListTitle(todoList.id, title);
+    };
+
     return (
         <div>
             <div className='container'>
-                <h3>{todoList.title}</h3>
+                <EditableSpan
+                    value={todoList.title}
+                    onTitleChange={handleTodoListTitleChange}
+                    maxTitleLength={30}
+                />
                 <Button
                     title='X'
                     onClick={() => {
@@ -110,24 +114,7 @@ export const TodolistItem = ({
                     }}
                 />
             </div>
-
-            <div>
-                <Input
-                    className={error ? 'error' : ''}
-                    taskTitle={taskTitle}
-                    onChange={setTaskTitle}
-                    onEnter={handleCreateTask}
-                    setError={setError}
-                />
-                <Button
-                    title='+'
-                    isDisabled={taskTitle === ''}
-                    onClick={() => {
-                        handleCreateTask();
-                    }}
-                />
-                {error && <div className='error-message'>{error}</div>}
-            </div>
+            <CreateItemForm сreateItem={handleCreateTask} maxTitleLength={15} />
             {tasksList}
             <div>{date}</div>
             <div>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import './App.css';
 import { Task, TodolistItem } from './TodolistItem';
 import { v1 } from 'uuid';
+import { CreateItemForm } from './CreateItemForm';
 
 export type FilterType = 'all' | 'active' | 'completed';
 export type TodoList = {
@@ -41,7 +42,6 @@ export const App = () => {
         ],
     });
 
-    console.log(tasks);
     const deleteTask = (taskId: string, todoListId: string) => {
         const filteredTasks = tasks[todoListId].filter(
             (task) => task.id !== taskId,
@@ -63,6 +63,7 @@ export const App = () => {
         const taskToChangeStatus = tasks[todoListId].map((task) => {
             return task.id === taskId ? { ...task, isDone } : task;
         });
+
         setTasks({ ...tasks, [todoListId]: taskToChangeStatus });
     };
 
@@ -83,8 +84,36 @@ export const App = () => {
     //delete object.property
     //delete object[property]
 
+    const changeTaskTitle = (
+        todoListId: string,
+        taskId: string,
+        title: string,
+    ) => {
+        const taskToChangeTitle = tasks[todoListId].map((task) => {
+            return task.id === taskId ? { ...task, title } : task;
+        });
+
+        setTasks({ ...tasks, [todoListId]: taskToChangeTitle });
+    };
+
+    const createTodolist = (title: string) => {
+        const newTodoListId = v1();
+        const newTodoList: TodoList = { id: newTodoListId, title, filter: 'all' };
+        setTodolists([newTodoList, ...todolists]);
+        setTasks({ ...tasks, [newTodoListId]: [] });
+    };
+
+    const changeTodoListTitle = (todoListId: string, title: string) => {
+        const todoListToChangeTitle = todolists.map((list) => {
+            return list.id === todoListId ? { ...list, title } : list;
+        });
+
+        setTodolists(todoListToChangeTitle);
+    };
+
     return (
         <div className='app'>
+            <CreateItemForm сreateItem={createTodolist} maxTitleLength={30} />
             {todolists.map((todolist) => {
                 const tasksForTodolist = tasks[todolist.id];
                 let filteredTasks = tasksForTodolist;
@@ -108,6 +137,8 @@ export const App = () => {
                         createTask={createTask}
                         changeTaskStatus={changeStatus}
                         deleteTodoList={deleteTodoList}
+                        changeTaskTitle={changeTaskTitle}
+                        changeTodoListTitle={changeTodoListTitle}
                     />
                 );
             })}
