@@ -1,15 +1,13 @@
-import { useState } from 'react';
-import { Input } from './Input';
+import { ChangeEvent, useState } from 'react';
+import { TextField } from '@mui/material';
 
 type Props = {
-    status?: boolean;
     value: string;
     onTitleChange: (title: string) => void;
     maxTitleLength: number;
 };
 
 export function EditableSpan({
-    status,
     value,
     onTitleChange,
     maxTitleLength,
@@ -40,27 +38,36 @@ export function EditableSpan({
         }
     };
 
+    const handleOnChangeInput = (event: ChangeEvent<HTMLInputElement>) => {
+        setTitle(event.currentTarget.value);
+        setError(null);
+    };
+
+    const handleOnEnterInput = (
+        event: React.KeyboardEvent<HTMLInputElement>,
+    ) => {
+        if (event.key === 'Enter') {
+            handleChangeTask();
+        }
+    };
+
     return (
         <>
             {isEditMode ? (
-                <Input
-                    className={error ? 'error' : ''}
+                <TextField
+                    variant={'outlined'}
+                    size='small'
                     value={title}
-                    autofocus={true}
+                    autoFocus
                     onBlur={handleChangeTask}
-                    onEnter={handleChangeTask}
-                    onChange={setTitle}
-                    setError={setError}
+                    onKeyDown={handleOnEnterInput}
+                    onChange={handleOnChangeInput}
+                    helperText={error}
+                    error={!!error}
                 />
             ) : (
-                <span
-                    onDoubleClick={turnOnEditMode}
-                    className={status ? 'task-done' : 'task'}
-                >
-                    {value}
-                </span>
+                <span onDoubleClick={turnOnEditMode}>{value}</span>
             )}
-            {error && <div className='error-message'>{error}</div>}
         </>
     );
 }

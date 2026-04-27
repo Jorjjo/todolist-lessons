@@ -1,7 +1,7 @@
 import { ChangeEvent } from 'react';
 
 type Props = {
-    className: string;
+
     value: string;
     onChange: (taskTitle: string) => void;
     onEnter: () => void;
@@ -26,8 +26,6 @@ export function Input(props: Props) {
     return (
         <input
             onBlur={props.onBlur}
-            autoFocus={props.autofocus}
-            className={props.className}
             value={props.value}
             onChange={handleOnChangeInput}
             onKeyDown={handleOnEnterInput}
