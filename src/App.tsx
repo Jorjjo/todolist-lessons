@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useReducer, useState } from 'react';
 import './App.css';
 import { Task, TodolistItem } from './todoListItem/TodolistItem';
 import { v1 } from 'uuid';
@@ -20,6 +20,13 @@ import CssBaseline from '@mui/material/CssBaseline';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import { NavButton } from './NavButton';
 import { stackSx } from './App.styled';
+import {
+    changeTodoListFilterAC,
+    changeTodoListTitleAC,
+    createTodoListAC,
+    deleteTodoListAC,
+    todolistsReducer,
+} from './model/todolists-reducer';
 
 export type FilterType = 'all' | 'active' | 'completed';
 export type TodoList = {
@@ -80,10 +87,16 @@ export const App = () => {
     };
 
     //--------------------------------------------------//
+    //BLL
     const todoListId1 = v1();
     const todoListId2 = v1();
 
-    const [todolists, setTodolists] = useState<Array<TodoList>>([
+    // const [todolists, setTodolists] = useState<Array<TodoList>>([
+    //     { id: todoListId1, title: 'What to learn', filter: 'all' },
+    //     { id: todoListId2, title: 'What to buy', filter: 'all' },
+    // ]);
+
+    const [todolists, dispatchToTodolists] = useReducer(todolistsReducer, [
         { id: todoListId1, title: 'What to learn', filter: 'all' },
         { id: todoListId2, title: 'What to buy', filter: 'all' },
     ]);
@@ -126,23 +139,6 @@ export const App = () => {
         setTasks({ ...tasks, [todoListId]: taskToChangeStatus });
     };
 
-    const changeFilter = (todoListId: string, filter: FilterType) => {
-        const newTodoLists = todolists.map((list) => {
-            return list.id === todoListId ? { ...list, filter } : list;
-        });
-        setTodolists(newTodoLists);
-    };
-
-    const deleteTodoList = (todoListId: string) => {
-        setTodolists(todolists.filter((list) => list.id !== todoListId));
-
-        delete tasks[todoListId];
-        setTasks({ ...tasks });
-    };
-    //The delete operator removes a property from an object.
-    //delete object.property
-    //delete object[property]
-
     const changeTaskTitle = (
         todoListId: string,
         taskId: string,
@@ -155,23 +151,30 @@ export const App = () => {
         setTasks({ ...tasks, [todoListId]: taskToChangeTitle });
     };
 
+    //TodoList
     const createTodolist = (title: string) => {
-        const newTodoListId = v1();
-        const newTodoList: TodoList = {
-            id: newTodoListId,
-            title,
-            filter: 'all',
-        };
-        setTodolists([newTodoList, ...todolists]);
-        setTasks({ ...tasks, [newTodoListId]: [] });
+        const action = createTodoListAC(title);
+        dispatchToTodolists(action);
+        setTasks({ ...tasks, [action.payload.id]: [] });
     };
 
-    const changeTodoListTitle = (todoListId: string, title: string) => {
-        const todoListToChangeTitle = todolists.map((list) => {
-            return list.id === todoListId ? { ...list, title } : list;
-        });
+    const deleteTodoList = (todoListId: string) => {
+        const action = deleteTodoListAC(todoListId);
+        dispatchToTodolists(action);
 
-        setTodolists(todoListToChangeTitle);
+        delete tasks[todoListId];
+        setTasks({ ...tasks });
+    };
+    //The delete operator removes a property from an object.
+    //delete object.property
+    //delete object[property]
+
+    const changeTodoListTitle = (todoListId: string, title: string) => {
+        dispatchToTodolists(changeTodoListTitleAC({ id: todoListId, title }));
+    };
+
+    const changeFilter = (todoListId: string, filter: FilterType) => {
+        dispatchToTodolists(changeTodoListFilterAC({ id: todoListId, filter }));
     };
 
     return (

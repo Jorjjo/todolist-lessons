@@ -55,7 +55,7 @@ export function EditableSpan({
         <>
             {isEditMode ? (
                 <TextField
-                    variant={'outlined'}
+                    variant={'standard'}
                     size='small'
                     value={title}
                     autoFocus
